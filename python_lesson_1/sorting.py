@@ -5,6 +5,7 @@ def reset_array(arr):
     return [5, 1, 4, 3, 2]
 
 int_boolean = False;
+int_boolean2 = True;
 
 def bubble_sort(arr):
     swapped = True
