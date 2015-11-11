@@ -7,6 +7,9 @@ def reset_array(arr):
 def insertion_sort(arr):
     print("This is a test")
 
+def print_mom(arr):
+    print("Hi mom!")
+
 def bubble_sort(arr):
     swapped = True
     i = 0
