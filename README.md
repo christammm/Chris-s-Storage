@@ -11,8 +11,6 @@ Everyone who has access to this filesystem will have full access to everything, 
 CAREFUL when editing and deleting files. Also, when committing and coding, please write
 meaningful comments so that we cna UNDERSTAND each other's work.
 
-*************
-
 
 Here are some links to some resources for learning Python.
 
