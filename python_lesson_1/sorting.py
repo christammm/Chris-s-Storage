@@ -1,4 +1,4 @@
-__author__ = 'Jabari Dash'
+__author__ = 'Jabari Dash, Chris'
 
 
 def reset_array(arr):
