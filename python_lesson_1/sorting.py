@@ -4,12 +4,6 @@ __author__ = 'Jabari Dash'
 def reset_array(arr):
     return [5, 1, 4, 3, 2]
 
-def insertion_sort(arr):
-    print("This is a test")
-    print("This is a 2nd test")
-
-def print_mom(arr):
-    print("Hi mom! its me")
 
 def bubble_sort(arr):
     swapped = True
