@@ -8,7 +8,7 @@ def insertion_sort(arr):
     print("This is a test")
 
 def print_mom(arr):
-    print("Hi mom!")
+    print("Hi mom! its me")
 
 def bubble_sort(arr):
     swapped = True
