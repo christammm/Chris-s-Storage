@@ -4,6 +4,7 @@ __author__ = 'Jabari Dash'
 def reset_array(arr):
     return [5, 1, 4, 3, 2]
 
+int_boolean = True;
 
 def bubble_sort(arr):
     swapped = True
