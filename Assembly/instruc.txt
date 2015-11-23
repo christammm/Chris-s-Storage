@@ -8,7 +8,6 @@ rot
 stva
 load
 esba
-esba
 bpbp
 dupe
 pbp
