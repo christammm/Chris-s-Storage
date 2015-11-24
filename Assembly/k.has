@@ -119,22 +119,22 @@ LF_F_F_111:   dc = left(dc); if (s) goto LF_F_F_F;
 /***************************************************************/
 
 L0000:      /------------------------- P ----------------------
-            mar = ir; rd; // mem[x]
-            temp = mdr; // temp = mem[x]
-            mar = sp; sp = sp - 1; // 
-            rd;
-            mdr = temp; wr;
-            goto fetch; // mem[sp--] = mem[x]
+                  mar = ir; rd; // mem[x]
+                  temp = mdr; // temp = mem[x]
+                  mar = sp; sp = sp - 1; // 
+                  rd;
+                  mdr = temp; wr;
+                  goto fetch; // mem[sp--] = mem[x]
 
 L0001:      /------------------------- PC -----------------------
-            mar = sp; sp = sp - 1;
-            rd;
-            mdr = ir; wr;
-            goto fetch; 
+                  mar = sp; sp = sp - 1;
+                  rd;
+                  mdr = ir; wr;
+                  goto fetch; 
 
 L2:         /------------------------- PR ----------------------
-			mar= ir; rd;
-			temp = mdr;
+	            mar= ir; rd;
+	            temp = mdr;
 			temp = temp + bp;
 			mar = sp; sp = sp - 1; 
 			mdr = temp; wr;
