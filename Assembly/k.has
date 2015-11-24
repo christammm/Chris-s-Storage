@@ -140,6 +140,16 @@ L2:         /------------------------- PR ----------------------
 			mdr = temp; wr;
 			goto fetch;
 			
+		//-----Luis's Method--//                
+        	// temp = ir & xmask;
+            	// temp = bp + temp;    
+            	// mar = temp;
+            	// rd;
+            	// sp = sp - 1; 
+            	// mar = sp;
+            	// wr; goto fetch;
+
+			
 			
 L3:         /------------------------- CORA ----------------------
 			mar = ir; rd;
