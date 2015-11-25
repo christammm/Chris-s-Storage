@@ -1,10 +1,4 @@
-/ Standard Instruction Set Horizontal Microcode  wp.has
-
-/ The label indicates the opcode decoded up to that point.  
-/ Each hex digit in a label represents 4 bits.  0 or 1 in a 
-/ label represents the bits 0 and 1.  For example, the 
-/ label LF_01 corresponds to opcode bits 1111 01; the label 
-/ LF_2 corresponds to opcode bits 1111 0010. 
+/ Stack Instruction Set Horizontal Microcode  k.has
 
 /***************************************************************/
 /     Fetch instruction and increment pc register               /
@@ -190,10 +184,32 @@ LF_0000:    /-------------------------  RET ---------------------- (✓)
                   sp = sp + 1;
                   pc = mdr; goto fetch;
 
-LF_0001:    /------------------------- ADD ----------------------
+LF_0001:    /------------------------- ADD ---------------------- (✓)
+            
+            mar = sp; 
+            rd;
+            temp = mdr;
+            sp = sp + 1;
+            mar = sp;
+            rd;
+            mdr = temp + mdr;
+            mar = sp;
+            wr; goto fetch; 
 
-LF_2:       /------------------------- SUB ----------------------
-                       
+
+LF_2:       /------------------------- SUB ---------------------- (✓)
+            
+            mar = sp;
+            sp = sp + 1;
+            rd;
+            temp = mdr;
+            mar = sp;
+            rd;
+            mdr = mdr - temp;
+            wr; goto fetch;
+
+
+                     
 LF_3:       /------------------------- STAV ---------------------
                             
 LF_4:       /------------------------- STVA ----------------------
@@ -243,7 +259,80 @@ LF_F_2:     /-------------------------------- SHRA --------------------
 
 LF_F_3:     /------------------------------- M ---------------------
 
-LF_F_4:     /------------------------------- MULTI ---------------------
+LF_F_4:     /------------------------------- MULTI --------------------- (✓)
+            // INITIAL GETS -------
+            ct = 1;
+            mar = sp;
+            rd; 
+            temp = mdr;
+            sp = sp + 1;
+            mar = sp;
+            rd;
+            temp2 = mdr;
+
+            //-----------
+
+            // CHECKING FOR NEGATIVES ------
+
+            0 = temp; if (z) goto zeromultiplier;
+            0 = temp2; if (z) goto zeromultiplier;
+            0 = temp & mdr; if (s) goto posmulti;
+            0 = temp; if (s) goto tnegfound;
+            0 = temp; if (s) goto mnegfound;
+
+            //----------------------------------
+
+            // the ct register is used as a flag to see if there was a  
+            // negative found
+
+
+
+            // MAIN LOOP --------
+
+            posmulti: 
+                        mdr = mdr - temp2;
+            multi:
+                        mdr = mdr + temp2;
+                        temp = temp - 1;
+                        0 = temp; if (z) goto pospushfetch;
+                        goto multi;
+
+            // -------------------
+
+            // PUSH TO STACK------
+
+            pospushfetch:
+                        0 = ct; if (z) goto negpushfetch;
+                        wr; goto fetch;
+            negpushfetch:
+                        mdr = ~mdr
+                        mdr = mdr + 1;
+                        wr; goto fetch;
+
+            //--------------------------
+
+            // NEGATIVE TO POSETIVES----------
+
+            mnegfound:
+                        mdr = ~mdr;
+                        mdr = mdr + 1;
+                        ct = ct - 1; goto posmulti;
+
+
+            tnegfound:
+                        temp = ~temp;
+                        temp = temp + 1;
+                        ct = ct - 1; goto posmulti;
+
+//------------------------------
+
+
+
+
+
+            zeromultiplier:
+                        mdr = 0;
+                        wr; goto fetch;
 
 LF_F_5:     /------------------------------- DIV --------------------- (✓)
                   ct = 0;
