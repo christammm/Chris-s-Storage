@@ -260,6 +260,7 @@ LF_F_2:     /-------------------------------- SHRA --------------------
 LF_F_3:     /------------------------------- M ---------------------
 
 LF_F_4:     /------------------------------- MULTI --------------------- (✓)
+           
             // INITIAL GETS -------
             ct = 1;
             mar = sp;
@@ -269,6 +270,7 @@ LF_F_4:     /------------------------------- MULTI --------------------- (✓)
             mar = sp;
             rd;
             temp2 = mdr;
+            mdr = 0;
 
             //-----------
 
@@ -276,7 +278,7 @@ LF_F_4:     /------------------------------- MULTI --------------------- (✓)
 
             0 = temp; if (z) goto zeromultiplier;
             0 = temp2; if (z) goto zeromultiplier;
-            0 = temp & mdr; if (s) goto posmulti;
+            0 = temp & mdr; if (s) goto multi;
             0 = temp; if (s) goto tnegfound;
             0 = temp; if (s) goto mnegfound;
 
@@ -287,42 +289,40 @@ LF_F_4:     /------------------------------- MULTI --------------------- (✓)
 
 
 
-            // MAIN LOOP --------
+// MAIN LOOP --------
 
-            posmulti: 
-                        mdr = mdr - temp2;
-            multi:
-                        mdr = mdr + temp2;
-                        temp = temp - 1;
-                        0 = temp; if (z) goto pospushfetch;
-                        goto multi;
+multi:
+            mdr = mdr + temp2;
+            temp = temp - 1;
+            0 = temp; if (z) goto pospushfetch;
+            goto multi;
 
-            // -------------------
+// -------------------
 
-            // PUSH TO STACK------
+// PUSH TO STACK------
 
-            pospushfetch:
-                        0 = ct; if (z) goto negpushfetch;
-                        wr; goto fetch;
-            negpushfetch:
-                        mdr = ~mdr
-                        mdr = mdr + 1;
-                        wr; goto fetch;
+pospushfetch:
+            0 = ct; if (z) goto negpushfetch;
+            wr; goto fetch;
+negpushfetch:
+            mdr = ~mdr
+            mdr = mdr + 1;
+            wr; goto fetch;
 
-            //--------------------------
+//--------------------------
 
-            // NEGATIVE TO POSETIVES----------
+// NEGATIVE TO POSETIVES----------
 
-            mnegfound:
-                        mdr = ~mdr;
-                        mdr = mdr + 1;
-                        ct = ct - 1; goto posmulti;
+mnegfound:
+            mdr = ~mdr;
+            mdr = mdr + 1;
+            ct = ct - 1; goto multi;
 
 
-            tnegfound:
-                        temp = ~temp;
-                        temp = temp + 1;
-                        ct = ct - 1; goto posmulti;
+tnegfound:
+            temp = ~temp;
+            temp = temp + 1;
+            ct = ct - 1; goto multi;
 
 //------------------------------
 
@@ -330,9 +330,9 @@ LF_F_4:     /------------------------------- MULTI --------------------- (✓)
 
 
 
-            zeromultiplier:
-                        mdr = 0;
-                        wr; goto fetch;
+zeromultiplier:
+            mdr = 0;
+            wr; goto fetch;
 
 LF_F_5:     /------------------------------- DIV --------------------- (✓)
                   ct = 0;
