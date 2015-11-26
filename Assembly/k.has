@@ -262,7 +262,7 @@ LF_F_3:     /------------------------------- M ---------------------
 LF_F_4:     /------------------------------- MULTI --------------------- (✓)
            
             // INITIAL GETS -------
-            ct = 1;
+            temp3 = 1;
             mar = sp;
             rd; 
             temp = mdr;
@@ -284,7 +284,7 @@ LF_F_4:     /------------------------------- MULTI --------------------- (✓)
 
             //----------------------------------
 
-            // the ct register is used as a flag to see if there was a  
+            // the temp3 register is used as a flag to see if there was a  
             // negative found
 
 
@@ -302,7 +302,7 @@ multi:
 // PUSH TO STACK------
 
 pospushfetch:
-            0 = ct; if (z) goto negpushfetch;
+            0 = temp3; if (z) goto negpushfetch;
             wr; goto fetch;
 negpushfetch:
             mdr = ~mdr
@@ -316,13 +316,13 @@ negpushfetch:
 mnegfound:
             mdr = ~mdr;
             mdr = mdr + 1;
-            ct = ct - 1; goto multi;
+            temp3 = temp3 - 1; goto multi;
 
 
 tnegfound:
             temp = ~temp;
             temp = temp + 1;
-            ct = ct - 1; goto multi;
+            temp3 = temp3 - 1; goto multi;
 
 //------------------------------
 
@@ -334,8 +334,9 @@ zeromultiplier:
             mdr = 0;
             wr; goto fetch;
 
+
 LF_F_5:     /------------------------------- DIV --------------------- (✓)
-                  ct = 0;
+                  temp3 = 0;
                   mar = sp;
                   rd;
                   temp = mdr;
@@ -350,8 +351,10 @@ LF_F_5:     /------------------------------- DIV --------------------- (✓)
                   0 = temp & mdr; if (s) goto pposout; //if both signs are negative
                   0 = mdr; if (s) goto negout;
                   0 = temp; if (s) goto negout;
+                  goto posout;
 
             pposout:
+
                   temp = ~temp;
                   mdr = ~mdr;
                   temp = temp + 1;
@@ -360,7 +363,7 @@ LF_F_5:     /------------------------------- DIV --------------------- (✓)
             posout:
 
                   mdr = mdr - temp; if (s) goto posformat;
-                  ct = ct + 1;
+                  temp3 = temp3 + 1;
                   0 = mdr; if (z) goto posformat;
                   goto posout;
 
@@ -373,7 +376,7 @@ LF_F_5:     /------------------------------- DIV --------------------- (✓)
             negfinish:
 
                   mdr = mdr - temp; if (s) goto negformat;
-                  ct = ct + 1;
+                  temp3 = temp3 + 1;
                   0 = mdr; if (z) goto negformat;
                   goto negfinish;
 
@@ -396,14 +399,14 @@ LF_F_5:     /------------------------------- DIV --------------------- (✓)
 
 
             negformat:
-            ct = ~ct;
-            ct = ct + 1;
+            temp3 = ~temp3;
+            temp3 = temp3 + 1;
             mar = sp;
-            mdr = ct;
+            mdr = temp3;
             wr; goto fetch;
 
             posformat:
-            mdr = ct;
+            mdr = temp3;
             mar = sp;
             wr; goto fetch;
 
