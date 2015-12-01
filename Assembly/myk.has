@@ -1,0 +1,561 @@
+/ Stack Instruction Set Horizontal Microcode  k.has
+
+/***************************************************************/
+/     Fetch instruction and increment pc register               /
+/***************************************************************/
+fetch:      mar = pc; pc = pc + 1;
+            rd;                   
+            ir = mdr;
+/***************************************************************/
+/           Decode opcode                                       /
+/***************************************************************/
+            dc = ir; if(s) goto L1;
+L0:         dc = left(dc); if (s) goto L01; 
+L00:        dc = left(dc); if (s) goto L001; 
+L000:       dc = left(dc); if (s) goto L0001; 
+            goto L0000;
+L1:         dc = left(dc); if (s) goto L11; 
+L10:        dc = left(dc); if (s) goto L101; 
+L100:       dc = left(dc); if (s) goto L9; 
+            goto L8;
+L01:        dc = left(dc); if (s) goto L011; 
+L010:       dc = left(dc); if (s) goto L5; 
+            goto L4;          
+L11:        dc = left(dc); if (s) goto L111; 
+L110:       dc = left(dc); if (s) goto LD; 
+            goto LC;
+L001:       dc = left(dc); if (s) goto L3; 
+            goto L2;
+L011:       dc = left(dc); if (s) goto L7; 
+            goto L6;
+L101:       dc = left(dc); if (s) goto LB; 
+            goto LA;
+L111:       dc = left(dc); if (s) goto LF; 
+            goto LE;
+
+LF:         dc = left(dc); if (s) goto LF_1; 
+LF_0:       dc = left(dc); if (s) goto LF_01; 
+LF_00:      dc = left(dc); if (s) goto LF_001; 
+LF_000:     dc = left(dc); if (s) goto LF_0001;
+            goto LF_0000;
+LF_1:       dc = left(dc); if (s) goto LF_11; 
+LF_10:      dc = left(dc); if (s) goto LF_101; 
+LF_100:     dc = left(dc); if (s) goto LF_9;
+            goto LF_8;
+LF_01:      dc = left(dc); if (s) goto LF_011; 
+LF_010:     dc = left(dc); if (s) goto LF_5;
+            goto LF_4;
+LF_11:      dc = left(dc); if (s) goto LF_111; 
+LF_110:     dc = left(dc); if (s) goto LF_D;
+            goto LF_C;
+LF_001:     dc = left(dc); if (s) goto LF_3;
+            goto LF_2;
+LF_011:     dc = left(dc); if (s) goto LF_7;
+            goto LF_6;
+LF_101:     dc = left(dc); if (s) goto LF_B;
+            goto LF_A;
+LF_111:     dc = left(dc); if (s) goto LF_F;
+            goto LF_E;
+
+LF_F:       dc = left(dc); if (s) goto LF_F_1;
+LF_F_0:     dc = left(dc); if (s) goto LF_F_01;
+LF_F_00:    dc = left(dc); if (s) goto LF_F_001;
+LF_F_000:   dc = left(dc); if (s) goto LF_F_0001;
+            goto LF_F_0000;
+LF_F_1:     dc = left(dc); if (s) goto LF_F_11
+LF_F_10:    dc = left(dc); if (s) goto LF_F_101;
+LF_F_100:   dc = left(dc); if (s) goto LF_F_9;
+            goto LF_F_8;
+LF_F_01:    dc = left(dc); if (s) goto LF_F_011;
+LF_F_010:   dc = left(dc); if (s) goto LF_F_5;
+            goto LF_F_4;
+LF_F_11:    dc = left(dc); if (s) goto LF_F_111
+LF_F_110:   dc = left(dc); if (s) goto LF_F_D;
+            goto LF_F_C;
+LF_F_001:   dc = left(dc); if (s) goto LF_F_3;
+            goto LF_F_2;
+LF_F_011:   dc = left(dc); if (s) goto LF_F_7;
+            goto LF_F_6;
+LF_F_101:   dc = left(dc); if (s) goto LF_F_B;
+            goto LF_F_A;
+LF_F_111:   dc = left(dc); if (s) goto LF_F_F;
+            goto LF_F_E;
+
+LF_F_F:     dc = left(dc); if (s) goto fetch;
+LF_F_F_0:   dc = left(dc); if (s) goto LF_F_F_01;
+LF_F_F_00:  dc = left(dc); if (s) goto LF_F_F_001;
+LF_F_F_000: dc = left(dc); if (s) goto LF_F_F_0001;
+            goto LF_F_F_0000;
+LF_F_F_001: dc = left(dc); if (s) goto LF_F_F_3
+            goto LF_F_F_2; 
+LF_F_F_01:  dc = left(dc); if (s) goto fetch;
+LF_F_F_010: dc = left(dc); if (s) goto fetch;
+            goto LF_F_F_4;
+
+
+L0000:  /-------------------------- P ---------------------------- (✓)
+      
+      mar = ir;
+      rd;
+      sp = sp - 1;
+      mar = sp;
+      wr; goto fetch;
+
+L0001:  /-------------------------- PC ---------------------------- (✓)
+
+            mdr = ir & xmask; 
+            sp = sp - 1;
+            mar = sp;
+            wr;  goto fetch;
+
+L2:   /-------------------------- PR -------------------------- (✓)
+                                    
+            temp = ir & xmask;
+            temp = bp + temp;    
+            mar = temp;
+            rd;
+            sp = sp - 1; 
+            mar = sp;
+            wr; goto fetch;
+
+L3: /-------------------------- CORA -------------------------- (✓)
+      
+            mdr = ir & xmask;
+            mdr = bp + mdr;
+            sp = sp - 1;
+            mar = sp;
+            wr; goto fetch;
+
+L4: /-------------------------- ASPC -------------------------- (✓)
+      
+            temp = ir & xmask;
+            temp = sp + temp;
+            temp = temp & xmask;
+            sp = temp; goto fetch;
+
+L5:   /-------------------------- CALL -------------------------- (✓)
+      
+            sp = sp - 1;
+            mar = sp;
+            mdr = pc;
+            wr;
+            pc = ir & xmask; goto fetch;
+
+L6:   /-------------------------- JA -------------------------- (✓)
+
+            pc = ir & xmask; goto fetch;
+
+L7:   /-------------------------- JCNT ---------------------------- Chris (?)
+                  ct = ct - 1;
+				  0 = temp; if(z) goto dojn;
+                  goto fetch;
+dojn:             pc = ir & xmask; goto fetch;
+            
+
+
+
+L8:         /------------------------- JP  ----------------------
+
+L9:         /------------------------- JN ----------------------- Chris(?)
+                  mar  = sp; sp = sp + 1;
+                  rd; 
+				  0 = temp; if(s) goto dojn;
+                  goto fetch;
+dojn:             pc = ir & xmask; goto fetch;
+ 
+LA:         /------------------------- JZ ---------------------
+
+LB:         /------------------------- JNZ ----------------------- Chris (?)
+                  mar = sp; sp = sp + 1;
+                  rd; 
+				  0 = temp; if (z) goto fetch;
+                  pc = ir & xmask; goto fetch;
+
+LC:         /------------------------- JODD -----------------------
+
+LD:         /------------------------- JZON ----------------------
+
+LE:         /------------------------- JZOP --------------------- Chris (?)
+                  mar = sp; sp = sp + 1;
+                  rd; 
+				  0 = temp; if(s) goto fetch;
+                  pc = ir & xmask; goto fetch;
+LF_0000:    /-------------------------  RET ---------------------- (✓)
+                  
+                  mar = sp;
+                  rd;
+                  sp = sp + 1;
+                  pc = mdr; goto fetch;
+
+LF_0001:    /------------------------- ADD ---------------------- (✓)
+            
+            mar = sp; 
+            rd;
+            temp = mdr;
+            sp = sp + 1;
+            mar = sp;
+            rd;
+            mdr = temp + mdr;
+            mar = sp;
+            wr; goto fetch; 
+
+
+LF_2:       /------------------------- SUB ---------------------- (✓)
+            
+            mar = sp;
+            sp = sp + 1;
+            rd;
+            temp = mdr;
+            mar = sp;
+            rd;
+            mdr = mdr - temp;
+            wr; goto fetch;
+
+
+                     
+LF_3:       /------------------------- STAV --------------------- Chris(?)
+            mar = sp; sp = sp + 1;
+            rd;
+            temp = mdr;
+            mar = temp; rd;
+            mdr = temp;
+            wr; goto fetch;
+                            
+LF_4:       /------------------------- STVA ---------------------- Chris(?)
+            mar = sp; sp = sp + 1;
+            rd;
+            temp = mdr;
+            mar = sp; sp = sp + 1;
+            rd;
+            temp2 = mdr;
+            mar = temp; rd;
+            mdr = temp2;
+            wr; goto fetch;
+                      
+LF_5:       /-------------------------  LOAD --------------------- Chris(?)
+            mar = sp; rd;
+            temp = mdr;
+            mar = temp; rd;
+            temp = mdr;
+            wr; goto fetch;
+
+                   
+LF_6:       /------------------------- ADDC ---------------------  Chris(?)
+            mar = sp;
+            rd;
+            mdr = mdr + ir;
+            mar = sp;
+            wr; goto fetch;
+
+
+LF_7:       /------------------------- SUBC --------------------- Chris(?)
+            mar = sp; 
+            rd;
+            mdr = mdr - ir;
+            wr; goto fetch;
+
+LF_8:       /------------------------- DUPE ---------------------- Chris(?)
+            mar = sp;
+            rd;
+            temp = mdr;
+            mar = sp; sp = sp - 1;
+            rd;
+            mdr = temp;
+            wr; goto fetch;
+
+LF_9:       /-------------------------- ESBA  ---------------------- (✓)
+            
+            mdr = bp; 
+            sp = sp - 1;
+            mar = sp;
+            wr;
+            bp = sp & xmask; 
+            goto fetch;
+
+LF_A:       /-------------------------- REBA  --------------------- (✓)
+            
+            sp = bp;
+            mar = sp;
+            rd;
+            bp = mdr;
+            sp = sp + 1; goto fetch;
+
+LF_B:       /--------------------------- ZESP    --------------------- Chris (?)
+            sp = 0;
+            wr; goto fetch;
+LF_C:       /----------------------------- SCMP -----------------------
+
+LF_D:       /----------------------------- UCMP -----------------------
+
+LF_E:       /------------------------------ REV ---------------------- Chris(?)
+            mar = sp; sp = sp + 1;
+            rd;
+            temp = mdr;
+            mar = sp;
+            rd
+            temp2 = mdr;
+            mar = sp;
+            rd;
+            mdr = temp2;
+            mar = sp; sp = sp - 1;
+            mdr = temp;
+            wr; goto fetch;
+
+
+LF_F_0000:  /----------------------------- SHLL ----------------------- Chris(?)
+            temp = ir & zmask; 
+		    0 = temp2; if (z) goto fetch;
+            mar = sp; rd
+lloop:      mdr = left(mdr);
+           temp = temp - 1; 
+		   0 = temp2; if (z) goto fetch;
+            goto lloop;
+
+LF_F_0001:  /------------------------------- SHRL --------------------- Chris(?)
+           temp = ir & zmask; 
+		   0 = temp2; if (z) goto fetch;
+            mar = sp; rd
+lloop:      mdr = right(mdr);
+           temp = temp- 1; 
+		   0 = temp2; if (z) goto fetch;
+            goto lloop;
+
+LF_F_2:     /-------------------------------- SHRA ---------------------
+
+LF_F_3:     /------------------------------- M -------------------------
+
+LF_F_4:     /------------------------------- MULTI --------------------- (✓)
+           
+            // INITIAL GETS -------
+            temp3 = 1;
+            mar = sp;
+            rd; 
+            temp = mdr;
+            sp = sp + 1;
+            mar = sp;
+            rd;
+            temp2 = mdr;
+            mdr = 0;
+
+            //-----------
+
+            // CHECKING FOR NEGATIVES ------
+
+            0 = temp; if (z) goto zeromultiplier;
+            0 = temp2; if (z) goto zeromultiplier;
+            0 = temp & mdr; if (s) goto multi;
+            0 = temp; if (s) goto tnegfound;
+            0 = temp; if (s) goto mnegfound;
+
+            //----------------------------------
+
+            // the temp3 register is used as a flag to see if there was a  
+            // negative found
+
+
+
+// MAIN LOOP --------
+
+multi:
+            mdr = mdr + temp2;
+            temp = temp - 1;
+            0 = temp; if (z) goto pospushfetch;
+            goto multi;
+
+// -------------------
+
+// PUSH TO STACK------
+
+pospushfetch:
+            0 = temp3; if (z) goto negpushfetch;
+            wr; goto fetch;
+negpushfetch:
+            mdr = ~mdr
+            mdr = mdr + 1;
+            wr; goto fetch;
+
+//--------------------------
+
+// NEGATIVE TO POSETIVES----------
+
+mnegfound:
+            mdr = ~mdr;
+            mdr = mdr + 1;
+            temp3 = temp3 - 1; goto multi;
+
+
+tnegfound:
+            temp = ~temp;
+            temp = temp + 1;
+            temp3 = temp3 - 1; goto multi;
+
+//------------------------------
+
+
+
+
+
+zeromultiplier:
+            mdr = 0;
+            wr; goto fetch;
+
+
+LF_F_5:     /------------------------------- DIV --------------------- (✓)
+                  temp3 = 0;
+                  mar = sp;
+                  rd;
+                  temp = mdr;
+                  sp = sp + 1;
+                  temp2 = sp;
+                  0 = temp; if (z) goto spPush;
+
+                  mar = temp2;
+                  rd;
+
+
+                  0 = temp & mdr; if (s) goto pposout; //if both signs are negative
+                  0 = mdr; if (s) goto negout;
+                  0 = temp; if (s) goto negout;
+                  goto posout;
+
+            pposout:
+
+                  temp = ~temp;
+                  mdr = ~mdr;
+                  temp = temp + 1;
+                  mdr = mdr + 1;
+
+            posout:
+
+                  mdr = mdr - temp; if (s) goto posformat;
+                  temp3 = temp3 + 1;
+                  0 = mdr; if (z) goto posformat;
+                  goto posout;
+
+
+            negout:
+
+                  0 = temp; if (s) goto tflipper;
+                  0 = mdr; if (s) goto mflipper;
+
+            negfinish:
+
+                  mdr = mdr - temp; if (s) goto negformat;
+                  temp3 = temp3 + 1;
+                  0 = mdr; if (z) goto negformat;
+                  goto negfinish;
+
+                  
+
+                  tflipper:
+                        temp = ~temp;
+                        temp = temp + 1; goto negfinish;
+                  mflipper:
+                        mdr = ~mdr;
+                        mdr = mdr + 1; goto negfinish;
+
+            spPush:
+
+                  sp = sp - 1;
+                  mdr = temp2;
+                  mar = sp;
+                  wr;
+                  goto fetch;
+
+
+            negformat:
+            temp3 = ~temp3;
+            temp3 = temp3 + 1;
+            mar = sp;
+            mdr = temp3;
+            wr; goto fetch;
+
+            posformat:
+            mdr = temp3;
+            mar = sp;
+            wr; goto fetch;
+
+LF_F_6:     /------------------------------- REM --------------------- Chris(?)
+            mar = sp; sp = sp + 1;
+            rd;
+            temp = mdr;
+
+            0 = temp; if(z) goto dorem;
+            mar = sp; 
+            rd;
+            mdr = mdr % temp;
+            wr; goto fetch;
+
+
+dorem:      mar = sp; sp = sp - 1;
+            rd;
+            mdr = ct;
+            wr; goto fetch;
+
+LF_F_7:     /------------------------------- ADDY ---------------------
+
+LF_F_8:     /------------------------------- OR ---------------------
+            mar = sp; sp = sp + 1;
+            rd;
+            temp = mdr;
+            mar = sp;
+            rd;
+
+
+LF_F_9:     /------------------------------- XOR ---------------------
+
+LF_F_A:     /--------------------------------- AND ------------------- Chris(?)
+            temp = sp + 1;
+            mar = temp;
+            rd;
+            temp = mdr;
+            mar = sp;
+            rd;
+            mdr = mdr & temp;
+            wr; goto fetch;
+
+LF_F_B:     /--------------------------------- FLIP ------------------- Chris(?)
+            mar = sp;
+            rd;
+            temp = mdr;
+            temp = ~temp;
+            mdr = temp;
+            wr; goto fetch;
+
+LF_F_C:     /----------------------------------- CALI -----------------
+
+LF_F_D:     /--------------------------- SECT ------------------------- Chris(?)
+            mar = sp; sp = sp + 1;
+            rd;
+            ct = mdr;
+            wr; goto fetch;
+
+LF_F_E:     /---------------------------- ROT ------------------------
+
+LF_F_F_0000:/----------------------------- PSP ----------------------- Chris(?)
+            temp = sp;
+            mar = sp; sp = sp - 1;
+            rd;
+            mdr = temp;
+            wr; goto fetch;
+
+LF_F_F_0001:/------------------------------ BPBP ---------------------- Chris(?)
+            mar = bp;
+            rd;
+            bp = mdr;
+            wr; goto fetch;
+
+LF_F_F_2:   /------------------------------- POBP --------------------- Chris(?)
+            mar = sp; sp = sp + 1;
+            rd;
+            bp = mdr;
+            wr; goto fetch;
+
+LF_F_F_3:   /--------------------------------- PBP ------------------- Chris(?)
+            mar = sp; sp = sp - 1;
+            rd;
+            bp = mdr;
+            wr; goto fetch;
+
+LF_F_F_4:   /-------------------------------- BCPY --------------------
+      
