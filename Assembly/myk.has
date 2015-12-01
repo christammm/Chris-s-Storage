@@ -147,9 +147,9 @@ L6:   /-------------------------- JA -------------------------- (✓)
 
 L7:   /-------------------------- JCNT ---------------------------- Chris (?)
                   ct = ct - 1;
-				  0 = temp; if(z) goto dojn;
+				  0 = temp; if(z) goto doct;
                   goto fetch;
-dojn:             pc = ir & xmask; goto fetch;
+doct:             pc = ir & xmask; goto fetch;
             
 
 
@@ -315,7 +315,7 @@ LF_F_0001:  /------------------------------- SHRL --------------------- Chris(?)
            temp = ir & zmask; 
 		   0 = temp2; if (z) goto fetch;
             mar = sp; rd
-lloop:      mdr = right(mdr);
+rloop:      mdr = right(mdr);
            temp = temp- 1; 
 		   0 = temp2; if (z) goto fetch;
             goto lloop;
